@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/wheel58m/Library/Mobile Documents/com~apple~CloudDocs/School/Object-Oriented Programming (CS-1410-N01)/Practice & Homework/Homework 23 - Fountain Of Objects/Homework 23 - Fountain Of Objects.csproj": {}
+    "/Users/wheel58m/Library/Mobile Documents/com~apple~CloudDocs/School/Object-Oriented Programming (CS-1410-N01)/Practice & Homework/Homework 23 - Fountain Of Objects/Classes/Classes.csproj": {}
   },
   "projects": {
-    "/Users/wheel58m/Library/Mobile Documents/com~apple~CloudDocs/School/Object-Oriented Programming (CS-1410-N01)/Practice & Homework/Homework 23 - Fountain Of Objects/Homework 23 - Fountain Of Objects.csproj": {
+    "/Users/wheel58m/Library/Mobile Documents/com~apple~CloudDocs/School/Object-Oriented Programming (CS-1410-N01)/Practice & Homework/Homework 23 - Fountain Of Objects/Classes/Classes.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/wheel58m/Library/Mobile Documents/com~apple~CloudDocs/School/Object-Oriented Programming (CS-1410-N01)/Practice & Homework/Homework 23 - Fountain Of Objects/Homework 23 - Fountain Of Objects.csproj",
-        "projectName": "Homework 23 - Fountain Of Objects",
-        "projectPath": "/Users/wheel58m/Library/Mobile Documents/com~apple~CloudDocs/School/Object-Oriented Programming (CS-1410-N01)/Practice & Homework/Homework 23 - Fountain Of Objects/Homework 23 - Fountain Of Objects.csproj",
+        "projectUniqueName": "/Users/wheel58m/Library/Mobile Documents/com~apple~CloudDocs/School/Object-Oriented Programming (CS-1410-N01)/Practice & Homework/Homework 23 - Fountain Of Objects/Classes/Classes.csproj",
+        "projectName": "Classes",
+        "projectPath": "/Users/wheel58m/Library/Mobile Documents/com~apple~CloudDocs/School/Object-Oriented Programming (CS-1410-N01)/Practice & Homework/Homework 23 - Fountain Of Objects/Classes/Classes.csproj",
         "packagesPath": "/Users/wheel58m/.nuget/packages/",
-        "outputPath": "/Users/wheel58m/Library/Mobile Documents/com~apple~CloudDocs/School/Object-Oriented Programming (CS-1410-N01)/Practice & Homework/Homework 23 - Fountain Of Objects/obj/",
+        "outputPath": "/Users/wheel58m/Library/Mobile Documents/com~apple~CloudDocs/School/Object-Oriented Programming (CS-1410-N01)/Practice & Homework/Homework 23 - Fountain Of Objects/Classes/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/wheel58m/.nuget/NuGet/NuGet.Config"
