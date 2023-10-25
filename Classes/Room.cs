@@ -1,12 +1,10 @@
 namespace Classes;
 
 public class Room {
-    public bool HasFountain { get; init; }
+    public bool FountainActive { get; set; }
     public string? Description { get; set; }
 
-    public Room() {
-        HasFountain = false;
-    }
+    public Room() { }
 }
 public class Entrance : Room {
     public Entrance() {
@@ -14,15 +12,12 @@ public class Entrance : Room {
     }
 }
 public class Fountain : Room {
-    public bool FountainActive { get; set; }
-
     public void ActivateFountain() {
         FountainActive = true;
         Description = "You hear the rushing waters from the Fountain of Objects. It has been reactivated!";
     }
 
     public Fountain() {
-        HasFountain = true;
         FountainActive = false;
         Description = "You hear water dripping in this room. The Fountain of Objects is here!";
     }
