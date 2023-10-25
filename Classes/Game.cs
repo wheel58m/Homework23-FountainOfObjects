@@ -5,30 +5,32 @@ public class Game {
     public static (int X, int Y) PlayerPosition { get; set; } = (0, 0);
     public static Room? ActiveRoom { get; set; }
     public static Room? FountainRoom { get; set; }
-    public static Room[,] Rooms { get; set; } = new Room[4, 4];
+    public static Room[,]? Rooms { get; set; }
 
     public static void InitializeRooms() {
+        // Randomly Generate Rooms (The entrance should always be first)
+        Random random = new();
+        int fountainX = random.Next(1, Rooms!.GetLength(0));
+        int fountainY = random.Next(1, Rooms.GetLength(1));
+
         for (int i = 0; i < Rooms.GetLength(0); i++) {
             for (int j = 0; j < Rooms.GetLength(1); j++) {
-                switch (i, j) {
-                    case (0, 0):
-                        Rooms[i, j] = new Entrance();
-                        ActiveRoom = Rooms[i, j];
-                        break;
-                    case (0, 2):
-                        Rooms[i, j] = new Fountain();
-                        FountainRoom = Rooms[i, j];
-                        break;
-                    default:
-                        Rooms[i, j] = new Room();
-                        break;
+                if (i == 0 && j == 0) {
+                    Rooms[i, j] = new Entrance();
+                    ActiveRoom = Rooms[i, j];
+                } else if (i == fountainX && j == fountainY) {
+                    Rooms[i, j] = new Fountain();
+                    FountainRoom = Rooms[i, j];
+                } else {
+                    Rooms[i, j] = new Room();
                 }
             }
         }
+
     }
     public static void DisplayRoomDetails() {
         Console.WriteLine("---------------------------------------------------");
-        Utility.WriteInfo($"You are in the room at: (Row={PlayerPosition.X}, Column={PlayerPosition.Y})");
+        Utility.WriteInfo($"You are in the room at: (Row={PlayerPosition.Y}, Column={PlayerPosition.X})");
         if (ActiveRoom?.Description != null) {
             Utility.WriteNarration(ActiveRoom.Description);
         }
@@ -50,27 +52,27 @@ public class Game {
                     Utility.WriteError("You cannot move north any further.");
                 } else {
                     PlayerPosition = (PlayerPosition.X, PlayerPosition.Y - 1);
-                    ActiveRoom = Rooms[PlayerPosition.X, PlayerPosition.Y];
+                    ActiveRoom = Rooms?[PlayerPosition.X, PlayerPosition.Y];
                     CheckForWin();
                 }
                 break;
             case "move east":
-                if (PlayerPosition.X == Rooms.GetLength(0) - 1) {
+                if (PlayerPosition.X == Rooms?.GetLength(0) - 1) {
                     Console.WriteLine("---------------------------------------------------");
                     Utility.WriteError("You cannot move east any further.");
                 } else {
                     PlayerPosition = (PlayerPosition.X + 1, PlayerPosition.Y);
-                    ActiveRoom = Rooms[PlayerPosition.X, PlayerPosition.Y];
+                    ActiveRoom = Rooms?[PlayerPosition.X, PlayerPosition.Y];
                     CheckForWin();
                 }
                 break;
             case "move south":
-                if (PlayerPosition.Y == Rooms.GetLength(1) - 1) {
+                if (PlayerPosition.Y == Rooms?.GetLength(1) - 1) {
                     Console.WriteLine("---------------------------------------------------");
                     Utility.WriteError("You cannot move south any further.");
                 } else {
                     PlayerPosition = (PlayerPosition.X, PlayerPosition.Y + 1);
-                    ActiveRoom = Rooms[PlayerPosition.X, PlayerPosition.Y];
+                    ActiveRoom = Rooms?[PlayerPosition.X, PlayerPosition.Y];
                     CheckForWin();
                 }
                 break;
@@ -80,7 +82,7 @@ public class Game {
                     Utility.WriteError("You cannot move west any further.");
                 } else {
                     PlayerPosition = (PlayerPosition.X - 1, PlayerPosition.Y);
-                    ActiveRoom = Rooms[PlayerPosition.X, PlayerPosition.Y];
+                    ActiveRoom = Rooms?[PlayerPosition.X, PlayerPosition.Y];
                     CheckForWin();
                 }
                 break;
@@ -111,7 +113,19 @@ public class Game {
         }
     }
 
-    public Game() {
+    public Game(string size) {
+        switch (size) {
+            case "small":
+                Rooms = new Room[4, 4];
+                break;
+            case "medium":
+                Rooms = new Room[6, 6];
+                break;
+            case "large":
+                Rooms = new Room[8, 8];
+                break;
+        }
+
         IsRunning = true;
         InitializeRooms();
 

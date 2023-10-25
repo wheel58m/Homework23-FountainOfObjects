@@ -39,10 +39,39 @@ class Program {
         // Utility.WriteHint("A list of available commands will always be displayed at the bottom of the screen.");
         // Console.WriteLine();
 
+        Utility.AskForInput("Do you want to play a 'small', 'medium', or 'large' game? ", false);
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        string? input = Console.ReadLine()?.ToLower();
+        Console.ResetColor();
+
+        string? size;
+        switch (input) {
+            case "small":
+                Utility.WriteHint("You have chosen a small game.");
+                Console.WriteLine();
+                size = "small";
+                break;
+            case "medium":
+                Utility.WriteHint("You have chosen a medium game.");
+                Console.WriteLine();
+                size = "medium";
+                break;
+            case "large":
+                Utility.WriteHint("You have chosen a large game.");
+                Console.WriteLine();
+                size = "large";
+                break;
+            default:
+                Utility.WriteError("Invalid input. Defaulting to a small game.");
+                Console.WriteLine();
+                size = "small";
+                break;
+        }
+
         Utility.AskForInput("Press any key to enter the cavern...", false);
         Console.ReadKey(true);
 
         // Create Game --------------------------------------------------------/
-        Game game = new();
+        Game game = new(size);
     }
 }
