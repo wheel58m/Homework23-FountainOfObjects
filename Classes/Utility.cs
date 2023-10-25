@@ -23,7 +23,7 @@ public static class Utility {
         Console.WriteLine(narration);
         Console.ResetColor();
     }
-    public static void WriteInstruction(string instruction) {
+    public static void WriteInfo(string instruction) {
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine(instruction);
         Console.ResetColor();
@@ -31,6 +31,11 @@ public static class Utility {
     public static void WriteHint(string hint) {
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine(hint);
+        Console.ResetColor();
+    }
+    public static void WriteError(string error) {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(error);
         Console.ResetColor();
     }
     public static void AskForInput(string instruction, bool newLine = true) {
