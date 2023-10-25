@@ -22,3 +22,4 @@ public class Fountain : Room {
         Description = "You hear water dripping in this room. The Fountain of Objects is here!";
     }
 }
+public class Pit : Room { }
