@@ -1,14 +1,14 @@
 ﻿namespace Classes;
 
 public class Game {
-    public static bool IsRunning { get; set; }
-    public static (int X, int Y) PlayerPosition { get; set; } = (0, 0);
-    public static Room? ActiveRoom { get; set; }
-    public static Room? FountainRoom { get; set; }
-    public static Room[,]? Rooms { get; set; }
-    public static int NumberOfPits { get; set; } = 0;
+    public bool IsRunning { get; set; }
+    public Player Player { get; init; }
+    public Room? FountainRoom { get; private set; }
+    public Room[,]? Rooms { get; private set; }
+    public int NumberOfPits { get; init; } = 0;
+    public Mob[]? Mobs { get; set; }
 
-    public static void InitializeRooms() {
+    public void InitializeRooms() {
         // Randomly Generate Rooms (The entrance should always be first)
         Random random = new();
         int fountainX = random.Next(1, Rooms!.GetLength(0));
@@ -17,7 +17,6 @@ public class Game {
 
         // Generate Entrance
         Rooms[0, 0] = new Entrance();
-        ActiveRoom = Rooms[0, 0];
 
         // Generate Fountain
         Rooms[fountainX, fountainY] = new Fountain();
@@ -44,9 +43,23 @@ public class Game {
         }
 
     }
-    public static bool IsPitAdjacent() {
-        int x = PlayerPosition.X;
-        int y = PlayerPosition.Y;
+    public void GenerateMobs() {
+        for (int i = 0; i < Mobs!.Length; i++) {
+            Random random = new();
+            while(true) {
+                int mobX = random.Next(0, Rooms!.GetLength(0));
+                int mobY = random.Next(0, Rooms.GetLength(1));
+
+                if (Rooms[mobX, mobY] is not Entrance && Rooms[mobX, mobY] is not Pit) {
+                    Mobs[i] = new Maelstrom((mobX, mobY), this);
+                    break;
+                }
+            }
+        }
+    }
+    public bool IsPitAdjacent() {
+        int x = Player.Position.X;
+        int y = Player.Position.Y;
 
         if (x > 0 && Rooms?[x - 1, y] is Pit) {
             return true;
@@ -60,18 +73,39 @@ public class Game {
             return false;
         }
     }
-    public static void DisplayRoomDetails() {
+    public bool IsMaelstromAdjacent() {
+        int x = Player.Position.X;
+        int y = Player.Position.Y;
+
+        foreach (Mob mob in Mobs!) {
+            if (mob.Position == (x - 1, y)) {
+                return true;
+            } else if (mob.Position == (x + 1, y)) {
+                return true;
+            } else if (mob.Position == (x, y - 1)) {
+                return true;
+            } else if (mob.Position == (x, y + 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public void DisplayRoomDetails() {
         Console.WriteLine("---------------------------------------------------");
-        Utility.WriteInfo($"You are in the room at: (Row={PlayerPosition.Y}, Column={PlayerPosition.X})");
-        if (ActiveRoom?.Description != null) {
-            Utility.WriteNarration(ActiveRoom.Description);
+        Utility.WriteInfo($"You are in the room at: (Row={Player.Position.Y}, Column={Player.Position.X})");
+        if (Rooms![Player.Position.X, Player.Position.Y]?.Description != null) {
+            Utility.WriteNarration(Rooms![Player.Position.X, Player.Position.Y]?.Description!);
         }
         if (IsPitAdjacent()) {
             Utility.WriteNarration("You hear a breeze coming from a nearby pit.");
         }
-
+        if (Mobs!.Length > 0) {
+            if (IsMaelstromAdjacent()) {
+                Utility.WriteNarration("You hear the growling and groaning of a maelstrom nearby.");
+            }
+        }
     }
-    public static void GetCommand() {
+    public void GetCommand() {
         Utility.AskForInput("What do you want to do? ", false);
         Console.ForegroundColor = ConsoleColor.DarkGray;
         string command = Console.ReadLine()!;
@@ -79,50 +113,50 @@ public class Game {
 
         ValidateCommand(command);
     }
-    public static void ValidateCommand(string command) {
+    public void ValidateCommand(string command) {
         switch (command.ToLower()) {
             case "move north":
-                if (PlayerPosition.Y == 0) {
+                if (Player.Position.Y == 0) {
                     Console.WriteLine("---------------------------------------------------");
                     Utility.WriteError("You cannot move north any further.");
                 } else {
-                    PlayerPosition = (PlayerPosition.X, PlayerPosition.Y - 1);
-                    ActiveRoom = Rooms?[PlayerPosition.X, PlayerPosition.Y];
+                    Player.Move("north");
+                    CheckForMob();
                     CheckForWin();
                 }
                 break;
             case "move east":
-                if (PlayerPosition.X == Rooms?.GetLength(0) - 1) {
+                if (Player.Position.X == Rooms?.GetLength(0) - 1) {
                     Console.WriteLine("---------------------------------------------------");
                     Utility.WriteError("You cannot move east any further.");
                 } else {
-                    PlayerPosition = (PlayerPosition.X + 1, PlayerPosition.Y);
-                    ActiveRoom = Rooms?[PlayerPosition.X, PlayerPosition.Y];
+                    Player.Move("east");
+                    CheckForMob();
                     CheckForWin();
                 }
                 break;
             case "move south":
-                if (PlayerPosition.Y == Rooms?.GetLength(1) - 1) {
+                if (Player.Position.Y == Rooms?.GetLength(1) - 1) {
                     Console.WriteLine("---------------------------------------------------");
                     Utility.WriteError("You cannot move south any further.");
                 } else {
-                    PlayerPosition = (PlayerPosition.X, PlayerPosition.Y + 1);
-                    ActiveRoom = Rooms?[PlayerPosition.X, PlayerPosition.Y];
+                    Player.Move("south");
+                    CheckForMob();
                     CheckForWin();
                 }
                 break;
             case "move west":
-                if (PlayerPosition.X == 0) {
+                if (Player.Position.X == 0) {
                     Console.WriteLine("---------------------------------------------------");
                     Utility.WriteError("You cannot move west any further.");
                 } else {
-                    PlayerPosition = (PlayerPosition.X - 1, PlayerPosition.Y);
-                    ActiveRoom = Rooms?[PlayerPosition.X, PlayerPosition.Y];
+                    Player.Move("west");
+                    CheckForMob();
                     CheckForWin();
                 }
                 break;
             case "activate fountain":
-                if (ActiveRoom is Fountain fountain) {
+                if (Rooms?[Player.Position.X, Player.Position.Y] is Fountain fountain) {
                         fountain.ActivateFountain();
                 } else {
                     Console.WriteLine("---------------------------------------------------");
@@ -139,13 +173,21 @@ public class Game {
         }
     }
 
-    public static void CheckForWin() {
-        if (FountainRoom!.FountainActive && PlayerPosition == (0, 0)) {
+    public void CheckForMob() {
+        foreach (Mob mob in Mobs!) {
+            if (mob.Position == Player.Position) {
+                mob.Attack(Player);
+            }
+        }
+    }
+
+    public void CheckForWin() {
+        if (FountainRoom!.FountainActive && Player.Position == (0, 0)) {
             Console.WriteLine("---------------------------------------------------");
             Utility.WriteNarration("The Fountain of Objects has been reactivated, and you have escaped with your life!");
             Utility.WriteHint("You win!");
             IsRunning = false;
-        } else if (ActiveRoom is Pit) {
+        } else if (Rooms?[Player.Position.X, Player.Position.Y] is Pit) {
             Console.WriteLine("---------------------------------------------------");
             Utility.WriteNarration("You have fallen into a bottomless pit!");
             Utility.WriteError("You lose!");
@@ -158,19 +200,24 @@ public class Game {
             case "small":
                 Rooms = new Room[4, 4];
                 NumberOfPits = 1;
+                Mobs = new Mob[0];
                 break;
             case "medium":
                 Rooms = new Room[6, 6];
                 NumberOfPits = 2;
+                Mobs = new Mob[1];
                 break;
             case "large":
                 Rooms = new Room[8, 8];
                 NumberOfPits = 4;
+                Mobs = new Mob[2];
                 break;
         }
 
         IsRunning = true;
+        Player = new Player((0, 0), this);
         InitializeRooms();
+        GenerateMobs();
 
         Console.Clear();
         Utility.WriteTitle();
