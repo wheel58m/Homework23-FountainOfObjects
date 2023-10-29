@@ -36,8 +36,8 @@ class Program {
         Utility.WriteInfo("Once you have entered the cavern, you will be able to move around the cavern by typing the direction you want to move. You can move north, south, east, or west. You can type \"quit\" to quit the game at any time.");
         Console.WriteLine();
 
-        // Utility.WriteHint("A list of available commands will always be displayed at the bottom of the screen.");
-        // Console.WriteLine();
+        Utility.WriteHint("Type 'help' for a list of commands.");
+        Console.WriteLine();
 
         Utility.AskForInput("Do you want to play a 'small', 'medium', or 'large' game? ", false);
         Console.ForegroundColor = ConsoleColor.DarkGray;

@@ -300,12 +300,54 @@ public class Game {
                     Player.Attack(TargetMob("west"));
                 }
                 break;
+            case "help":
+                List<string> commands = new();
+
+                // Get Valid Directions
+                if (Player.Position.Y > 0) {
+                    commands.Add("Move North | ");
+                }
+                if (Player.Position.X < Rooms?.GetLength(0) - 1) {
+                    commands.Add("Move East | ");
+                }
+                if (Player.Position.Y < Rooms?.GetLength(1) - 1) {
+                    commands.Add("Move South | ");
+                }
+                if (Player.Position.X > 0) {
+                    commands.Add("Move West | ");
+                }
+
+                // Get Valid Attack Commands
+                if (Player.NumArrows > 0) {
+                    commands.Add("Shoot North | ");
+                    commands.Add("Shoot East | ");
+                    commands.Add("Shoot South | ");
+                    commands.Add("Shoot West | ");
+                }
+
+                // Get Valid Fountain Commands
+                if (Rooms?[Player.Position.X, Player.Position.Y] is Fountain && !FountainRoom!.FountainActive) {
+                    commands.Add("Activate Fountain | ");
+                }
+
+                commands.Add("Quit");
+
+                Console.WriteLine("---------------------------------------------------------------------------");
+                Utility.WriteHint("Available Commands: ", false);
+                foreach (string menuItem in commands) {
+                    Utility.WriteHint($"{menuItem}", false);
+                }
+                Console.WriteLine();
+
+                break;
             case "quit":
+                IsRunning = false;
+                CheckForWin();
                 break;
             default:
                 // Display Error & Prompt Again
                 Console.WriteLine("---------------------------------------------------------------------------");
-                Utility.WriteError("Invalid command. Please try again.");
+                Utility.WriteError("Invalid command. Please try again. Type 'help' for a list of commands.");
                 break;
         }
     }
@@ -345,7 +387,10 @@ public class Game {
     }
 
     public void CheckForWin() {
-        if (FountainRoom!.FountainActive && Player.Position == (0, 0)) {
+        if (!IsRunning) {
+            Console.WriteLine("---------------------------------------------------------------------------");
+            Console.WriteLine("Thanks for playing! Goodbye!");
+        } else if (FountainRoom!.FountainActive && Player.Position == (0, 0)) {
             Console.WriteLine("---------------------------------------------------------------------------");
             Utility.WriteNarration("The Fountain of Objects has been reactivated, and you have escaped with your life!");
             Utility.WriteHint("You win!");
