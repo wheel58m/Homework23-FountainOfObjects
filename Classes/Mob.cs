@@ -8,6 +8,7 @@ public class Mob {
         Position = position;
         GameReference = game;
     }
+    public bool IsAlive { get; set; } = true;
     public void Move(string direction) {
         switch (direction) {
             case "north":
@@ -41,24 +42,29 @@ public class Mob {
 
         Position = (newX, newY);
     }
-    public virtual void Attack(Player player) { }
+    public virtual void Attack(Mob mob) {
+        if (mob != null && mob.IsAlive) {
+            mob.IsAlive = false;
+        }
+    }
 }
 public class Player : Mob {
+    public int NumArrows { get; set; } = 5;
     public Player((int x, int y) position, Game game) : base(position, game) { }
 }
 public class Maelstrom : Mob {
     public Maelstrom((int x, int y) position, Game game) : base(position, game) { }
-    public override void Attack(Player player) {
+    public override void Attack(Mob player) {
         player.Move(2, -1); // Move player 1 space north and two spaces east
         Move(-2, 1); // Move maelstrom 1 space south and two spaces west
-        Console.WriteLine("---------------------------------------------------");
+        Console.WriteLine("---------------------------------------------------------------------------");
             Utility.WriteError("You were attacked by a maelstrom! Your position has moved.");
     }
 }
 public class Amarok : Mob {
     public Amarok((int x, int y) position, Game game) : base(position, game) { }
-    public override void Attack(Player player) {
-        Console.WriteLine("---------------------------------------------------");
+    public override void Attack(Mob player) {
+        Console.WriteLine("---------------------------------------------------------------------------");
         Utility.WriteError("You were eaten by an amarok!");
     }
 }

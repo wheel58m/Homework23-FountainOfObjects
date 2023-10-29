@@ -102,7 +102,7 @@ public class Game {
         int y = Player.Position.Y;
 
         foreach (Mob mob in Mobs!) {
-            if (mob is Maelstrom) {
+            if (mob is Maelstrom && mob.IsAlive) {
                 if (mob.Position == (x - 1, y)) {
                     return true;
                 } else if (mob.Position == (x + 1, y)) {
@@ -121,7 +121,7 @@ public class Game {
         int y = Player.Position.Y;
 
         foreach (Mob mob in Mobs!) {
-            if (mob is Amarok) {
+            if (mob is Amarok && mob.IsAlive) {
                 if (mob.Position == (x - 1, y)) {
                     return true;
                 } else if (mob.Position == (x + 1, y)) {
@@ -136,8 +136,8 @@ public class Game {
         return false;
     }
     public void DisplayRoomDetails() {
-        Console.WriteLine("---------------------------------------------------");
-        Utility.WriteInfo($"You are in the room at: (Row={Player.Position.Y}, Column={Player.Position.X})");
+        Console.WriteLine("---------------------------------------------------------------------------");
+        Utility.WriteInfo($"You are in the room at: (Row={Player.Position.Y}, Column={Player.Position.X}). You have {Player.NumArrows} arrows.");
         if (Rooms![Player.Position.X, Player.Position.Y]?.Description != null) {
             Utility.WriteNarration(Rooms![Player.Position.X, Player.Position.Y]?.Description!);
         }
@@ -165,7 +165,7 @@ public class Game {
         switch (command.ToLower()) {
             case "move north":
                 if (Player.Position.Y == 0) {
-                    Console.WriteLine("---------------------------------------------------");
+                    Console.WriteLine("---------------------------------------------------------------------------");
                     Utility.WriteError("You cannot move north any further.");
                 } else {
                     Player.Move("north");
@@ -175,7 +175,7 @@ public class Game {
                 break;
             case "move east":
                 if (Player.Position.X == Rooms?.GetLength(0) - 1) {
-                    Console.WriteLine("---------------------------------------------------");
+                    Console.WriteLine("---------------------------------------------------------------------------");
                     Utility.WriteError("You cannot move east any further.");
                 } else {
                     Player.Move("east");
@@ -185,7 +185,7 @@ public class Game {
                 break;
             case "move south":
                 if (Player.Position.Y == Rooms?.GetLength(1) - 1) {
-                    Console.WriteLine("---------------------------------------------------");
+                    Console.WriteLine("---------------------------------------------------------------------------");
                     Utility.WriteError("You cannot move south any further.");
                 } else {
                     Player.Move("south");
@@ -195,7 +195,7 @@ public class Game {
                 break;
             case "move west":
                 if (Player.Position.X == 0) {
-                    Console.WriteLine("---------------------------------------------------");
+                    Console.WriteLine("---------------------------------------------------------------------------");
                     Utility.WriteError("You cannot move west any further.");
                 } else {
                     Player.Move("west");
@@ -207,15 +207,71 @@ public class Game {
                 if (Rooms?[Player.Position.X, Player.Position.Y] is Fountain fountain) {
                         fountain.ActivateFountain();
                 } else {
-                    Console.WriteLine("---------------------------------------------------");
+                    Console.WriteLine("---------------------------------------------------------------------------");
                     Utility.WriteError("There is no fountain in this room.");
+                }
+                break;
+            case "shoot north":
+                if (Player.Position.Y == 0) {
+                    Console.WriteLine("---------------------------------------------------------------------------");
+                    Utility.WriteError("Your arrow hits the wall and falls to the ground.");
+                    Player.NumArrows--; // Still use an arrow
+                } else if (Player.NumArrows == 0) {
+                    Console.WriteLine("---------------------------------------------------------------------------");
+                    Utility.WriteError("You don't have any arrows left.");
+                } else {
+                    Player.NumArrows--;
+                    Player.Attack(TargetMob("north"));
+                }
+                break;
+            case "shoot east":
+                if (Player.Position.X == Rooms?.GetLength(0)) {
+                    Console.WriteLine("---------------------------------------------------------------------------");
+                    Utility.WriteError("Your arrow hits the wall and falls to the ground.");
+                    Player.NumArrows--; // Still use an arrow
+                } else if (Player.NumArrows == 0) {
+                    Console.WriteLine("---------------------------------------------------------------------------");
+                    Utility.WriteError("You don't have any arrows left.");
+                } else {
+                    Player.NumArrows--;
+                    Player.Attack(TargetMob("east"));
+                }
+                break;
+            case "shoot south":
+                if (Player.Position.Y == Rooms?.GetLength(1)) {
+                    Console.WriteLine("---------------------------------------------------------------------------");
+                    Utility.WriteError("Your arrow hits the wall and falls to the ground.");
+                    Player.NumArrows--; // Still use an arrow
+                } else if (Player.NumArrows == 0) {
+                    Console.WriteLine("---------------------------------------------------------------------------");
+                    Utility.WriteError("You don't have any arrows left.");
+                } else {
+                    Player.NumArrows--;
+                    Player.Attack(TargetMob("south"));
+                }
+                break;
+            case "shoot west":
+                if (Rooms?[Player.Position.X, Player.Position.Y] is Entrance) {
+                    Console.WriteLine("---------------------------------------------------------------------------");
+                    Utility.WriteError("Your arrow exits the cavern. You hear a cat shriek.");
+                    Player.NumArrows--; // Still use an arrow
+                } else if (Player.Position.X == 0) {
+                    Console.WriteLine("---------------------------------------------------------------------------");
+                    Utility.WriteError("Your arrow hits the wall and falls to the ground.");
+                    Player.NumArrows--; // Still use an arrow
+                } else if (Player.NumArrows == 0) {
+                    Console.WriteLine("---------------------------------------------------------------------------");
+                    Utility.WriteError("You don't have any arrows left.");
+                } else {
+                    Player.NumArrows--;
+                    Player.Attack(TargetMob("west"));
                 }
                 break;
             case "quit":
                 break;
             default:
                 // Display Error & Prompt Again
-                Console.WriteLine("---------------------------------------------------");
+                Console.WriteLine("---------------------------------------------------------------------------");
                 Utility.WriteError("Invalid command. Please try again.");
                 break;
         }
@@ -223,26 +279,52 @@ public class Game {
 
     public void CheckForMob() {
         foreach (Mob mob in Mobs!) {
-            if (mob.Position == Player.Position) {
+            if (mob.Position == Player.Position && mob.IsAlive) {
                 mob.Attack(Player);
             }
         }
     }
+    public Mob TargetMob(string direction) {
+        int x = Player.Position.X;
+        int y = Player.Position.Y;
+
+        switch (direction) {
+            case "north":
+                y--;
+                break;
+            case "south":
+                y++;
+                break;
+            case "east":
+                x++;
+                break;
+            case "west":
+                x--;
+                break;
+        }
+
+        foreach (Mob mob in Mobs!) {
+            if (mob.Position == (x, y)) {
+                return mob;
+            }
+        }
+        return null!;
+    }
 
     public void CheckForWin() {
         if (FountainRoom!.FountainActive && Player.Position == (0, 0)) {
-            Console.WriteLine("---------------------------------------------------");
+            Console.WriteLine("---------------------------------------------------------------------------");
             Utility.WriteNarration("The Fountain of Objects has been reactivated, and you have escaped with your life!");
             Utility.WriteHint("You win!");
             IsRunning = false;
         } else if (Rooms?[Player.Position.X, Player.Position.Y] is Pit) {
-            Console.WriteLine("---------------------------------------------------");
+            Console.WriteLine("---------------------------------------------------------------------------");
             Utility.WriteNarration("You have fallen into a bottomless pit!");
             Utility.WriteError("You lose!");
             IsRunning = false;
         } else {
             foreach (Mob mob in Mobs!) {
-                if (mob is Amarok && mob.Position == Player.Position) {
+                if (mob is Amarok && mob.Position == Player.Position && mob.IsAlive) {
                     Utility.WriteError("You lose!");
                     IsRunning = false;
                 }
