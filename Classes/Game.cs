@@ -9,6 +9,7 @@ public class Game {
     public int NumberOfMaelsroms { get; init; } = 0;
     public int NumberOfAmaroks { get; init; } = 0;
     public Mob[]? Mobs { get; set; }
+    public bool SenseDiagonal { get; } = true;
 
     public void InitializeRooms() {
         // Randomly Generate Rooms (The entrance should always be first)
@@ -85,14 +86,26 @@ public class Game {
         int x = Player.Position.X;
         int y = Player.Position.Y;
 
-        if (x > 0 && Rooms?[x - 1, y] is Pit) {
+        if (x > 0 && Rooms?[x - 1, y] is Pit) { // Check West
             return true;
-        } else if (x < Rooms?.GetLength(0) - 1 && Rooms?[x + 1, y] is Pit) {
+        } else if (x < Rooms?.GetLength(0) - 1 && Rooms?[x + 1, y] is Pit) { // Check East
             return true;
-        } else if (y > 0 && Rooms?[x, y - 1] is Pit) {
+        } else if (y > 0 && Rooms?[x, y - 1] is Pit) { // Check North
             return true;
-        } else if (y < Rooms?.GetLength(1) - 1 && Rooms?[x, y + 1] is Pit) {
+        } else if (y < Rooms?.GetLength(1) - 1 && Rooms?[x, y + 1] is Pit) { // Check South
             return true;
+        } else if (SenseDiagonal) {
+            if (x < Rooms?.GetLength(0) - 1 && y > 0 && Rooms?[x + 1, y - 1] is Pit) { // Check Northeast
+                return true;
+            } else if (x < Rooms?.GetLength(0) - 1 && y < Rooms?.GetLength(1) - 1 && Rooms?[x + 1, y + 1] is Pit) { // Check Southeast
+                return true;
+            } else if (x > 0 && y < Rooms?.GetLength(1) - 1 && Rooms?[x - 1, y + 1] is Pit) { // Check Southwest
+                return true;
+            } else if (x > 0 && y > 0 && Rooms?[x - 1, y - 1] is Pit) { // Check Northwest
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -103,14 +116,24 @@ public class Game {
 
         foreach (Mob mob in Mobs!) {
             if (mob is Maelstrom && mob.IsAlive) {
-                if (mob.Position == (x - 1, y)) {
+                if (mob.Position == (x - 1, y)) { // Check West
                     return true;
-                } else if (mob.Position == (x + 1, y)) {
+                } else if (mob.Position == (x + 1, y)) { // Check East
                     return true;
-                } else if (mob.Position == (x, y - 1)) {
+                } else if (mob.Position == (x, y - 1)) { // Check North
                     return true;
-                } else if (mob.Position == (x, y + 1)) {
+                } else if (mob.Position == (x, y + 1)) { // Check South
                     return true;
+                } else if (SenseDiagonal) {
+                    if (mob.Position == (x + 1, y - 1)) { // Check Northeast
+                        return true;
+                    } else if (mob.Position == (x + 1, y + 1)) { // Check Southeast
+                        return true;
+                    } else if (mob.Position == (x - 1, y + 1)) { // Check Southwest 
+                        return true;
+                    } else if (mob.Position == (x - 1, y - 1)) { // Check Northwest
+                        return true;
+                    }
                 }
             }
         }
@@ -122,14 +145,24 @@ public class Game {
 
         foreach (Mob mob in Mobs!) {
             if (mob is Amarok && mob.IsAlive) {
-                if (mob.Position == (x - 1, y)) {
+                if (mob.Position == (x - 1, y)) { // Check West
                     return true;
-                } else if (mob.Position == (x + 1, y)) {
+                } else if (mob.Position == (x + 1, y)) { // Check East
                     return true;
-                } else if (mob.Position == (x, y - 1)) {
+                } else if (mob.Position == (x, y - 1)) { // Check North
                     return true;
-                } else if (mob.Position == (x, y + 1)) {
+                } else if (mob.Position == (x, y + 1)) { // Check South
                     return true;
+                } else if (SenseDiagonal) {
+                    if (mob.Position == (x + 1, y - 1)) { // Check Northeast
+                        return true;
+                    } else if (mob.Position == (x + 1, y + 1)) { // Check Southeast
+                        return true;
+                    } else if (mob.Position == (x - 1, y + 1)) { // Check Southwest 
+                        return true;
+                    } else if (mob.Position == (x - 1, y - 1)) { // Check Northwest
+                        return true;
+                    }
                 }
             }
         }
