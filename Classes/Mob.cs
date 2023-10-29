@@ -55,3 +55,10 @@ public class Maelstrom : Mob {
             Utility.WriteError("You were attacked by a maelstrom! Your position has moved.");
     }
 }
+public class Amarok : Mob {
+    public Amarok((int x, int y) position, Game game) : base(position, game) { }
+    public override void Attack(Player player) {
+        Console.WriteLine("---------------------------------------------------");
+        Utility.WriteError("You were eaten by an amarok!");
+    }
+}

@@ -6,6 +6,8 @@ public class Game {
     public Room? FountainRoom { get; private set; }
     public Room[,]? Rooms { get; private set; }
     public int NumberOfPits { get; init; } = 0;
+    public int NumberOfMaelsroms { get; init; } = 0;
+    public int NumberOfAmaroks { get; init; } = 0;
     public Mob[]? Mobs { get; set; }
 
     public void InitializeRooms() {
@@ -44,16 +46,38 @@ public class Game {
 
     }
     public void GenerateMobs() {
-        for (int i = 0; i < Mobs!.Length; i++) {
-            Random random = new();
-            while(true) {
-                int mobX = random.Next(0, Rooms!.GetLength(0));
-                int mobY = random.Next(0, Rooms.GetLength(1));
+        Random random = new();
+        int mobsInitialized = 0;
 
-                if (Rooms[mobX, mobY] is not Entrance && Rooms[mobX, mobY] is not Pit) {
-                    Mobs[i] = new Maelstrom((mobX, mobY), this);
-                    break;
+        // Generate Maelstroms
+        while (mobsInitialized < NumberOfMaelsroms) {
+            int maelstromX = random.Next(0, Rooms!.GetLength(0));
+            int maelstromY = random.Next(0, Rooms.GetLength(1));
+
+            if (Rooms[maelstromX, maelstromY] is not Pit && Rooms[maelstromX, maelstromY] is not Fountain) {
+                foreach (Mob mob in Mobs!) {
+                    if (mob != null && mob.Position == (maelstromX, maelstromY)) {
+                        continue;
+                    }
                 }
+                Mobs![mobsInitialized] = new Maelstrom((maelstromX, maelstromY), this);
+                mobsInitialized++;
+            }
+        }
+
+        // Generate Amaroks
+        while (mobsInitialized < NumberOfMaelsroms + NumberOfAmaroks) {
+            int amarokX = random.Next(0, Rooms!.GetLength(0));
+            int amarokY = random.Next(0, Rooms.GetLength(1));
+
+            if (Rooms[amarokX, amarokY] is not Pit && Rooms[amarokX, amarokY] is not Fountain && Rooms[amarokX, amarokY] is not Entrance) {
+                foreach (Mob mob in Mobs!) {
+                    if (mob != null && mob.Position == (amarokX, amarokY)) {
+                        continue;
+                    }
+                }
+                Mobs![mobsInitialized] = new Amarok((amarokX, amarokY), this);
+                mobsInitialized++;
             }
         }
     }
@@ -78,14 +102,35 @@ public class Game {
         int y = Player.Position.Y;
 
         foreach (Mob mob in Mobs!) {
-            if (mob.Position == (x - 1, y)) {
-                return true;
-            } else if (mob.Position == (x + 1, y)) {
-                return true;
-            } else if (mob.Position == (x, y - 1)) {
-                return true;
-            } else if (mob.Position == (x, y + 1)) {
-                return true;
+            if (mob is Maelstrom) {
+                if (mob.Position == (x - 1, y)) {
+                    return true;
+                } else if (mob.Position == (x + 1, y)) {
+                    return true;
+                } else if (mob.Position == (x, y - 1)) {
+                    return true;
+                } else if (mob.Position == (x, y + 1)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public bool IsAmarokAdjacent() {
+        int x = Player.Position.X;
+        int y = Player.Position.Y;
+
+        foreach (Mob mob in Mobs!) {
+            if (mob is Amarok) {
+                if (mob.Position == (x - 1, y)) {
+                    return true;
+                } else if (mob.Position == (x + 1, y)) {
+                    return true;
+                } else if (mob.Position == (x, y - 1)) {
+                    return true;
+                } else if (mob.Position == (x, y + 1)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -102,6 +147,9 @@ public class Game {
         if (Mobs!.Length > 0) {
             if (IsMaelstromAdjacent()) {
                 Utility.WriteNarration("You hear the growling and groaning of a maelstrom nearby.");
+            }
+            if (IsAmarokAdjacent()) {
+                Utility.WriteNarration("You can smell the rotten stench of an amarok in a nearby room.");
             }
         }
     }
@@ -192,6 +240,13 @@ public class Game {
             Utility.WriteNarration("You have fallen into a bottomless pit!");
             Utility.WriteError("You lose!");
             IsRunning = false;
+        } else {
+            foreach (Mob mob in Mobs!) {
+                if (mob is Amarok && mob.Position == Player.Position) {
+                    Utility.WriteError("You lose!");
+                    IsRunning = false;
+                }
+            }
         }
     }
 
@@ -200,17 +255,23 @@ public class Game {
             case "small":
                 Rooms = new Room[4, 4];
                 NumberOfPits = 1;
-                Mobs = new Mob[0];
+                NumberOfMaelsroms = 0;
+                NumberOfAmaroks = 1;
+                Mobs = new Mob[NumberOfMaelsroms + NumberOfAmaroks];
                 break;
             case "medium":
                 Rooms = new Room[6, 6];
                 NumberOfPits = 2;
-                Mobs = new Mob[1];
+                NumberOfMaelsroms = 1;
+                NumberOfAmaroks = 2;
+                Mobs = new Mob[NumberOfMaelsroms + NumberOfAmaroks];
                 break;
             case "large":
                 Rooms = new Room[8, 8];
                 NumberOfPits = 4;
-                Mobs = new Mob[2];
+                NumberOfMaelsroms = 2;
+                NumberOfAmaroks = 3;
+                Mobs = new Mob[NumberOfMaelsroms + NumberOfAmaroks];
                 break;
         }
 
