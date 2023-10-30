@@ -412,18 +412,18 @@ public class Game {
             Console.WriteLine("---------------------------------------------------------------------------");
             Utility.WriteNarration("The Fountain of Objects has been reactivated, and you have escaped with your life!");
             Utility.WriteHint("You win!");
-            IsRunning = false;
+            Player.IsAlive = false;
         } else if (Rooms?[Player.Position.X, Player.Position.Y] is Pit) {
             Console.WriteLine("---------------------------------------------------------------------------");
             Utility.WriteNarration("You have fallen into a bottomless pit!");
             Utility.WriteError("You lose!");
-            IsRunning = false;
+            Player.IsAlive = false;
         } else {
             if (Player.Health == 0) {
                 Console.WriteLine("---------------------------------------------------------------------------");
                 Utility.WriteNarration("You have died!");
                 Utility.WriteError("You lose!");
-                IsRunning = false;
+                Player.IsAlive = false;
             }
         }
     }
@@ -462,7 +462,7 @@ public class Game {
         Utility.WriteTitle();
         Console.WriteLine();
 
-        while(IsRunning) {
+        while(Player.IsAlive && IsRunning) {
             DisplayDetails();
             GetCommand();
         }

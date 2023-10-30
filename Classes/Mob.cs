@@ -68,6 +68,6 @@ public class Amarok : Mob {
     public override void Attack(Mob player) {
         player.Health--; // Player loses 1 health
         Console.WriteLine("---------------------------------------------------------------------------");
-        Utility.WriteError("You were eaten by an amarok!");
+        Utility.WriteError("You were attacked by an amarok!");
     }
 }
