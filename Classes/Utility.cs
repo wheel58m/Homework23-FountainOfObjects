@@ -23,9 +23,13 @@ public static class Utility {
         Console.WriteLine(narration);
         Console.ResetColor();
     }
-    public static void WriteInfo(string instruction) {
+    public static void WriteInfo(string instruction, bool newLine = true) {
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine(instruction);
+        if (newLine) {
+            Console.WriteLine(instruction);
+        } else {
+            Console.Write(instruction);
+        }
         Console.ResetColor();
     }
     public static void WriteHint(string hint, bool newLine = true) {

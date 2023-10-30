@@ -3,12 +3,13 @@ namespace Classes;
 public class Mob {
     public (int X, int Y) Position { get; set; }
     public Game GameReference { get; init; }
+    public bool IsAlive { get; set; } = true;
+    public int Health { get; set; } = 3;
 
     public Mob((int x, int y) position, Game game) {
         Position = position;
         GameReference = game;
     }
-    public bool IsAlive { get; set; } = true;
     public void Move(string direction) {
         switch (direction) {
             case "north":
@@ -57,6 +58,7 @@ public class Maelstrom : Mob {
     public override void Attack(Mob player) {
         player.Move(2, -1); // Move player 1 space north and two spaces east
         Move(-2, 1); // Move maelstrom 1 space south and two spaces west
+        player.Health--; // Player loses 1 health
         Console.WriteLine("---------------------------------------------------------------------------");
             Utility.WriteError("You were attacked by a maelstrom! Your position has moved.");
     }
@@ -64,6 +66,7 @@ public class Maelstrom : Mob {
 public class Amarok : Mob {
     public Amarok((int x, int y) position, Game game) : base(position, game) { }
     public override void Attack(Mob player) {
+        player.Health--; // Player loses 1 health
         Console.WriteLine("---------------------------------------------------------------------------");
         Utility.WriteError("You were eaten by an amarok!");
     }

@@ -168,12 +168,30 @@ public class Game {
         }
         return false;
     }
-    public void DisplayRoomDetails() {
+    public void DisplayDetails() {
         Console.WriteLine("---------------------------------------------------------------------------");
-        Utility.WriteInfo($"You are in the room at: (Row={Player.Position.Y}, Column={Player.Position.X}). You have {Player.NumArrows} arrows.");
+        Utility.WriteInfo($"Room: (Row={Player.Position.Y}, Column={Player.Position.X}). ", false); // Display Room Position
+        // Display Arrow Count
+        Utility.WriteInfo($"Arrows: ", false);
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        for (int i = 0; i < Player.NumArrows; i++) {
+            Console.Write("→ ");
+        }
+        Console.ResetColor();
+        // Display Health
+        Utility.WriteInfo("Health: ", false);
+        Console.ForegroundColor = ConsoleColor.Red;
+        for (int i = 0; i < Player.Health; i++) {
+            Console.Write("♥ ");
+        }
+        Console.ResetColor();
+        Console.WriteLine();
+
+        // Display Room Description
         if (Rooms![Player.Position.X, Player.Position.Y]?.Description != null) {
             Utility.WriteNarration(Rooms![Player.Position.X, Player.Position.Y]?.Description!);
         }
+        // Display Sense Hints
         if (IsPitAdjacent()) {
             Utility.WriteNarration("You hear a breeze coming from a nearby pit.");
         }
@@ -401,11 +419,11 @@ public class Game {
             Utility.WriteError("You lose!");
             IsRunning = false;
         } else {
-            foreach (Mob mob in Mobs!) {
-                if (mob is Amarok && mob.Position == Player.Position && mob.IsAlive) {
-                    Utility.WriteError("You lose!");
-                    IsRunning = false;
-                }
+            if (Player.Health == 0) {
+                Console.WriteLine("---------------------------------------------------------------------------");
+                Utility.WriteNarration("You have died!");
+                Utility.WriteError("You lose!");
+                IsRunning = false;
             }
         }
     }
@@ -445,7 +463,7 @@ public class Game {
         Console.WriteLine();
 
         while(IsRunning) {
-            DisplayRoomDetails();
+            DisplayDetails();
             GetCommand();
         }
     }
